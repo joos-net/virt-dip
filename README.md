@@ -72,6 +72,10 @@ docker cp $(docker create --name tc hashicorp/terraform:latest):/bin/terraform .
 ## Задача 6.2 (**)
 Предложите способ извлечь файл из контейнера, используя только команду docker build и любой Dockerfile.  
 Предоставьте скриншоты  действий .
+```
+docker build -o - . > out.tar
+tar -xvf out.tar bin/terraform
+```
 
 ## Задача 7 (***)
 Запустите ваше python-приложение с помощью runC, не используя docker или containerd.  
