@@ -3,53 +3,50 @@ version: "3"
 services:
   web:
     image: cr.yandex/crp6nr6apjkfmjnr553u/ex-py:1.0.0
+    env_file:
+      - web.env
+    ports:
+      - "5000:5000"
+    restart: on-failure
     networks:
         backend:
           ipv4_address: 172.20.0.5
-    restart: on-failure
-    ports:
-      - "5000:5000"
-    env_file:
-      - .env
 
   db:
     image: mysql:8
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: example
-      MYSQL_USER: app
-      MYSQL_PASSWORD: app
-    restart: on-failure
+    env_file:
+      - db.env
     ports:
       - "3306:3306"
     volumes:
       - ./dbdata:/var/lib/mysql/
+    restart: on-failure
     networks:
       backend:
         ipv4_address: 172.20.0.10
 
   reverse-proxy:
     image: haproxy
+    volumes:
+    - ./haproxy/reverse/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:rw 
+    ports:
+    - "8080:8080"
     restart: always
     networks:
         backend:
           ipv4_address: 172.20.0.15
-    ports:
-    - "8080:8080"
-    volumes:
-    - ./haproxy/reverse/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:rw 
 
   ingress-proxy:
     image: nginx:latest
+    volumes:
+    - ./nginx/ingress/default.conf:/etc/nginx/conf.d/default.conf:rw
+    - ./nginx/ingress/nginx.conf:/etc/nginx/nginx.conf:rw
+    ports:
+    - "8090:8090"
     restart: always
     networks:
         backend:
           ipv4_address: 172.20.0.20
-    ports:
-    - "8090:8090"
-    volumes:
-    - ./nginx/ingress/default.conf:/etc/nginx/conf.d/default.conf:rw
-    - ./nginx/ingress/nginx.conf:/etc/nginx/nginx.conf:rw
 
 networks:
   backend:
