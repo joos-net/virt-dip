@@ -24,6 +24,7 @@ docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8
 docker exec -it ec mysql -u root -p
 CREATE DATABASE example;
 docker run -d --env-file=.env -p 5000:5000 ex-python
+curl http://127.0.0.1:5000
 ```
 4. (Необязательная часть, *) По образцу предоставленного python кода внесите в него исправление для управления названием используемой таблицы через ENV переменную.
 
