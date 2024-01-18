@@ -2,7 +2,7 @@ version: "3"
 
 services:
   web:
-    image: ex-python
+    image: cr.yandex/crp6nr6apjkfmjnr553u/ex-py:1.0.0
     networks:
         backend:
           ipv4_address: 172.20.0.5
