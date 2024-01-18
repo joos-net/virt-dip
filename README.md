@@ -15,7 +15,16 @@
 ## Задача 1
 1. Сделайте в своем github пространстве fork репозитория ```https://github.com/netology-code/shvirtd-example-python/blob/main/README.md```.   
 2. Создайте файл с именем ```Dockerfile.python``` для сборки данного проекта. Используйте базовый образ ```python:3.9-slim```. Протестируйте корректность сборки. Не забудьте dockerignore.
+```
+docker build -t ex-python -f Dockerfile.python .
+```
 3. (Необязательная часть, *) Изучите инструкцию в проекте и запустите web-приложение без использования docker в venv. (Mysql БД можно запустить в docker run).
+```
+docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8
+docker exec -it ec mysql -u root -p
+CREATE DATABASE example;
+docker run -d --env-file=.env -p 5000:5000 ex-python
+```
 4. (Необязательная часть, *) По образцу предоставленного python кода внесите в него исправление для управления названием используемой таблицы через ENV переменную.
 
 ## Задача 2 (*)
