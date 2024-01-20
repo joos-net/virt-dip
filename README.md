@@ -52,7 +52,6 @@ docker push cr.yandex/crp.../ex-py:1.0.0
 2. Запустите проект локально с помощью docker compose , добейтесь его стабильной работы.Протестируйте приложение с помощью команд ```curl -L http://127.0.0.1:8080``` и ```curl -L http://127.0.0.1:8090```.
 
 3. Подключитесь к БД mysql с помощью команды ```docker exec <имя_контейнера> mysql -uroot -p<пароль root-пользователя>``` . Введите последовательно команды (не забываем в конце символ ; ): ```show databases; use <имя вашей базы данных(по-умолчанию example)>; show tables; SELECT * from requests LIMIT 10;```.
-
 4. Остановите проект. В качестве ответа приложите скриншот sql-запроса.
 
 ## Задача 4
@@ -62,6 +61,23 @@ docker push cr.yandex/crp.../ex-py:1.0.0
 https://docs.docker.com/engine/install/ubuntu/
 ```
 3. Напишите bash-скрипт, который скачает ваш fork-репозиторий в каталог /opt и запустит проект целиком.
+```bash
+sudo git clone https://github.com/joos-net/shvirtd-example-python /opt/shvirtd
+cd /opt/shvirtd
+sudo bash -c 'cat << EOF > db.env
+MYSQL_ROOT_PASSWORD=root
+MYSQL_DATABASE=example
+MYSQL_USER=app
+MYSQL_PASSWORD=app
+EOF'
+sudo bash -c 'cat << EOF > web.env
+DB_HOST=172.20.0.10
+DB_USER=root
+DB_PASSWORD=root
+DB_NAME=example
+EOF'
+docker compose up -d
+```
 4. Зайдите на сайт проверки http подключений, например(или аналогичный): ```https://check-host.net/check-http``` и запустите проверку вашего сервиса ```http://<внешний_IP-адрес_вашей_ВМ>:8090```. Таким образом трафик будет направлен в ingress-proxy.
 5. (Необязательная часть) Дополнительно настройте remote ssh context к вашему серверу. Отобразите список контекстов и результат удаленного выполнения ```docker ps -a```
 ```
@@ -78,6 +94,9 @@ docker context use default
 2. Протестируйте ручной запуск
 3. Настройте выполнение скрипта раз в 1 минуту через cron, crontab или systemctl timer.
 4. Предоставьте скрипт, cron-task и скриншот с несколькими резервными копиями в "/opt/backup"
+```
+docker run --rm --entrypoint "" -v `pwd`/backup:/backup --network compose_backend --link="compose-db-1" jooos/mysqldump mysqldump --opt -h db -u root -p"root" "--result-file=/backup/dumps.sql" example
+```
 
 ## Задача 6
 Скачайте docker образ ```hashicorp/terraform:latest``` и скопируйте бинарный файл ```/bin/terraform``` на свою локальную машину, используя dive и docker save.
