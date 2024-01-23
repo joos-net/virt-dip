@@ -142,16 +142,22 @@ https://docs.docker.com/engine/install/ubuntu/
 ```
 3. Напишите bash-скрипт, который скачает ваш fork-репозиторий в каталог /opt и запустит проект целиком.
 ```bash
+#!/bin/bash
+
+set -e
+
+sudo rm -rf /opt/shvirtd
 sudo git clone https://github.com/joos-net/shvirtd-example-python /opt/shvirtd
 cd /opt/shvirtd
 sudo bash -c 'cat << EOF > db.env
 MYSQL_ROOT_PASSWORD=root
+MYSQL_DATABASE=db
 EOF'
 sudo bash -c 'cat << EOF > web.env
 DB_HOST=172.20.0.10
 DB_USER=root
 DB_PASSWORD=root
-DB_NAME=bd
+DB_NAME=db
 DB_TABLE=it
 EOF'
 docker compose up -d
