@@ -146,15 +146,13 @@ sudo git clone https://github.com/joos-net/shvirtd-example-python /opt/shvirtd
 cd /opt/shvirtd
 sudo bash -c 'cat << EOF > db.env
 MYSQL_ROOT_PASSWORD=root
-MYSQL_DATABASE=example
-MYSQL_USER=app
-MYSQL_PASSWORD=app
 EOF'
 sudo bash -c 'cat << EOF > web.env
 DB_HOST=172.20.0.10
 DB_USER=root
 DB_PASSWORD=root
-DB_NAME=example
+DB_NAME=bd
+DB_TABLE=it
 EOF'
 docker compose up -d
 ```
