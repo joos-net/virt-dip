@@ -144,6 +144,24 @@ docker push cr.yandex/crp.../ex-py:1.0.0
 https://docs.docker.com/engine/install/ubuntu/
 ```
 3. Напишите bash-скрипт, который скачает ваш fork-репозиторий в каталог /opt и запустит проект целиком.
+4. Зайдите на сайт проверки http подключений, например(или аналогичный): ```https://check-host.net/check-http``` и запустите проверку вашего сервиса ```http://<внешний_IP-адрес_вашей_ВМ>:8090```. Таким образом трафик будет направлен в ingress-proxy.
+5. (Необязательная часть) Дополнительно настройте remote ssh context к вашему серверу. Отобразите список контекстов и результат удаленного выполнения ```docker ps -a```
+```
+docker context create test --docker "host=ssh://<username>@<ip-of-server>"
+docker context ls
+docker context use test
+docker ps -a
+docker context use default
+```
+
+![context](https://github.com/joos-net/virt-dip/blob/main/4-context.png)
+
+6. В качестве ответа повторите  sql-запрос и приложите скриншот с данного сервера, bash-скрипт и ссылку на fork-репозиторий.
+
+https://github.com/joos-net/shvirtd-example-python/blob/main/compose.yml
+
+![4-ip](https://github.com/joos-net/virt-dip/blob/main/4-ip.png)
+
 ```bash
 #!/bin/bash
 
@@ -165,19 +183,6 @@ DB_TABLE=it
 EOF'
 docker compose up -d
 ```
-4. Зайдите на сайт проверки http подключений, например(или аналогичный): ```https://check-host.net/check-http``` и запустите проверку вашего сервиса ```http://<внешний_IP-адрес_вашей_ВМ>:8090```. Таким образом трафик будет направлен в ingress-proxy.
-5. (Необязательная часть) Дополнительно настройте remote ssh context к вашему серверу. Отобразите список контекстов и результат удаленного выполнения ```docker ps -a```
-```
-docker context create test --docker "host=ssh://<username>@<ip-of-server>"
-docker context ls
-docker context use test
-docker ps -a
-docker context use default
-```
-
-![context](https://github.com/joos-net/virt-dip/blob/main/4-context.png)
-
-6. В качестве ответа повторите  sql-запрос и приложите скриншот с данного сервера, bash-скрипт и ссылку на fork-репозиторий.
 
 ## Задача 5 (*)
 1. Напишите и задеплойте на вашу облачную ВМ bash скрипт, который произведет резервное копирование БД mysql в директорию "/opt/backup" с помощью запуска в сети "backend" контейнера из образа ```schnitzler/mysqldump``` при помощи ```docker run ...``` команды. Подсказка: "документация образа."
@@ -185,17 +190,24 @@ docker context use default
 3. Настройте выполнение скрипта раз в 1 минуту через cron, crontab или systemctl timer.
 4. Предоставьте скрипт, cron-task и скриншот с несколькими резервными копиями в "/opt/backup"
 ```
-docker run --rm --entrypoint "" -v `pwd`/backup:/backup --network compose_backend --link="compose-db-1" jooos/mysqldump mysqldump --opt -h db -u root -p"root" "--result-file=/backup/dumps.sql" example
+docker run --rm --entrypoint "" -v `pwd`/backup:/backup --network compose_backend --link="compose-db-1" schnitzler/mysqldump mysqldump --opt -h db -u root -p"root" "--result-file=/backup/dumps.sql" example
 ```
+![dump1](https://github.com/joos-net/virt-dip/blob/main/dump1.png)
+
+![dump2](https://github.com/joos-net/virt-dip/blob/main/dump2.png)
 
 ## Задача 6
 Скачайте docker образ ```hashicorp/terraform:latest``` и скопируйте бинарный файл ```/bin/terraform``` на свою локальную машину, используя dive и docker save.
-Предоставьте скриншоты  действий .
+Предоставьте скриншоты действий.
 ```
 docker pull hashicorp/terraform:latest
 docker save -o test.tar hashicorp/terraform:latest
+tar -xvf test.tar e27646a588fb9ce75afee962a7ed397636930b084890f7e50016939448e3936c/layer.tar
 tar -xvf e27646a588fb9ce75afee962a7ed397636930b084890f7e50016939448e3936c/layer.tar bin/terraform
 ```
+![dive1](https://github.com/joos-net/virt-dip/blob/main/dive1.png)
+
+![dive3](https://github.com/joos-net/virt-dip/blob/main/dive3.png)
 
 ## Задача 6.1
 Добейтесь аналогичного результата, используя docker cp.  
@@ -203,14 +215,19 @@ tar -xvf e27646a588fb9ce75afee962a7ed397636930b084890f7e50016939448e3936c/layer.
 ```
 docker cp $(docker create --name tc hashicorp/terraform:latest):/bin/terraform ./terraform
 ```
+![cp](https://github.com/joos-net/virt-dip/blob/main/cp.png)
 
 ## Задача 6.2 (**)
 Предложите способ извлечь файл из контейнера, используя только команду docker build и любой Dockerfile.  
 Предоставьте скриншоты  действий .
+```Dockerfile
+FROM hashicorp/terraform:latest
+```
 ```
 docker build -o - . > out.tar
 tar -xvf out.tar bin/terraform
 ```
+![build](https://github.com/joos-net/virt-dip/blob/main/build.png)
 
 ## Задача 7 (***)
 Запустите ваше python-приложение с помощью runC, не используя docker или containerd.  
