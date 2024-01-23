@@ -16,6 +16,20 @@
 ## Задача 1
 1. Сделайте в своем github пространстве fork репозитория ```https://github.com/netology-code/shvirtd-example-python/blob/main/README.md```.   
 2. Создайте файл с именем ```Dockerfile.python``` для сборки данного проекта. Используйте базовый образ ```python:3.9-slim```. Протестируйте корректность сборки. Не забудьте dockerignore.
+```Dockerfile
+FROM python:3.9-slim
+
+RUN python3 -m venv venv
+RUN . venv/bin/activate
+
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY ./main.py .
+CMD python main.py
+
+EXPOSE "5000"
+```
 ```
 docker build -t ex-python -f Dockerfile.python .
 ```
