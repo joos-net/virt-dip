@@ -39,6 +39,7 @@ docker run -d -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=root mysql:8
 python main.py
 curl http://127.0.0.1:5000
 ```
+![1-test](https://github.com/joos-net/virt-dip/blob/main/1-test.png)
 4. (Необязательная часть, *) По образцу предоставленного python кода внесите в него исправление для управления названием используемой таблицы через ENV переменную.
 <details>
   <summary>main.py</summary>
@@ -134,6 +135,8 @@ docker push cr.yandex/crp.../ex-py:1.0.0
 3. Подключитесь к БД mysql с помощью команды ```docker exec <имя_контейнера> mysql -uroot -p<пароль root-пользователя>``` . Введите последовательно команды (не забываем в конце символ ; ): ```show databases; use <имя вашей базы данных(по-умолчанию example)>; show tables; SELECT * from requests LIMIT 10;```.
 4. Остановите проект. В качестве ответа приложите скриншот sql-запроса.
 
+![3-ip](https://github.com/joos-net/virt-dip/blob/main/3-ip.png)
+
 ## Задача 4
 1. Запустите в Yandex Cloud ВМ (вам хватит 2 Гб Ram).
 2. Подключитесь к Вм по ssh и установите docker.
@@ -171,6 +174,9 @@ docker context use test
 docker ps -a
 docker context use default
 ```
+
+![context](https://github.com/joos-net/virt-dip/blob/main/4-context.png)
+
 6. В качестве ответа повторите  sql-запрос и приложите скриншот с данного сервера, bash-скрипт и ссылку на fork-репозиторий.
 
 ## Задача 5 (*)
