@@ -35,13 +35,77 @@ docker build -t ex-python -f Dockerfile.python .
 ```
 3. (Необязательная часть, *) Изучите инструкцию в проекте и запустите web-приложение без использования docker в venv. (Mysql БД можно запустить в docker run).
 ```
-docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8
-docker exec -it ec mysql -u root -p
-CREATE DATABASE example;
-docker run -d --env-file=.env -p 5000:5000 ex-python
+docker run -d -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=root mysql:8
+python main.py
 curl http://127.0.0.1:5000
 ```
 4. (Необязательная часть, *) По образцу предоставленного python кода внесите в него исправление для управления названием используемой таблицы через ENV переменную.
+<details>
+  <summary>main.py</summary>
+  
+```Python
+from flask import Flask
+from flask import request
+import os
+import mysql.connector
+from datetime import datetime
+
+app = Flask(__name__)
+db_host=os.environ.get('DB_HOST')
+db_user=os.environ.get('DB_USER')
+db_password=os.environ.get('DB_PASSWORD')
+db_database=os.environ.get('DB_NAME')
+db_table=os.environ.get('DB_TABLE')
+
+mydb = mysql.connector.connect(
+host=db_host,
+user=db_user,
+password=db_password,
+)
+mycursor = mydb.cursor()
+
+# # SQL-запрос для создания базы в БД
+mycursor.execute(f"""CREATE DATABASE IF NOT EXISTS {db_database}""")
+
+# Подключение к базе данных MySQL
+db = mysql.connector.connect(
+host=db_host,
+user=db_user,
+password=db_password,
+database=db_database,
+autocommit=True )
+cursor = db.cursor()
+
+# SQL-запрос для создания таблицы в БД
+create_table_query = f"""
+CREATE TABLE IF NOT EXISTS {db_database}.{db_table} (
+id INT AUTO_INCREMENT PRIMARY KEY,
+request_date DATETIME,
+request_ip VARCHAR(255)
+)
+"""
+cursor.execute(create_table_query)
+
+@app.route('/')
+def index():
+    # Получение IP-адреса пользователя
+    ip_address = request.headers.get('X-Forwarded-For')
+
+    # Запись в базу данных
+    now = datetime.now()
+    current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+    query = f"""INSERT INTO {db_table} (request_date, request_ip) VALUES (%s, %s)"""
+    values = (current_time, ip_address)
+    cursor.execute(query, values)
+    db.commit()
+
+    return f'TIME: {current_time}, IP: {ip_address}'
+
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
+```
+</details>
 
 ## Задача 2 (*)
 1. Создайте в yandex cloud container registry с именем "test" с помощью "yc tool" . [Инструкция](https://cloud.yandex.ru/ru/docs/container-registry/quickstart/?from=int-console-help)
@@ -55,6 +119,7 @@ yc container registry configure-docker
 docker tag ex-python cr.yandex/crp.../ex-py:1.0.0
 docker push cr.yandex/crp.../ex-py:1.0.0
 ```
+[Отчет](https://github.com/joos-net/virt-dip/blob/main/vulnerabilities.csv)
 
 ## Задача 3
 1. Создайте файл ```compose.yaml```. Опишите в нем следующие сервисы: 
