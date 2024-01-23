@@ -158,7 +158,7 @@ docker context use default
 
 6. В качестве ответа повторите  sql-запрос и приложите скриншот с данного сервера, bash-скрипт и ссылку на fork-репозиторий.
 
-https://github.com/joos-net/shvirtd-example-python/blob/main/compose.yml
+https://github.com/joos-net/shvirtd-example-python
 
 ![4-ip](https://github.com/joos-net/virt-dip/blob/main/4-ip.png)
 
